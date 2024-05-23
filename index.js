@@ -398,77 +398,114 @@ function FilterColor() {
   Divcolor.appendChild(selecColor)
 }
 
-function FilterOrdenar(variedad) {
+function SubMenu(variedad) {
   const ordenar = document.createElement('label')
   ordenar.classList.add('ordenar')
-  ordenar.textContent = 'Ordenar: '
   const opciones = document.createElement('select')
   opciones.innerHTML = `
-  <option value = 'de mayor a menor'>De Mayor a Menor Precio</option> 
-  <option value = 'de menor a mayor'>De Menor a Mayor Precio</option>
-  <option value = 'de mayor a menor espacio'>De Mayor a Menor Espacio</option>
-  <option value = 'de menor a mayor espacio'>De Menor a Mayor Espacio</option>
-  <option value = 'de mayor valoracion a menor valoracion'>De Mayor a Menor Valoracion</option>
-  <option value = 'de menor valoracion a mayor valoracion'>De Menor a Mayor Valoracion</option>`
+    <option value=''>Selecciona Modelo</option>
+    <option value='15'>iPhone 15</option>
+    <option value='14'>iPhone 14</option>
+    <option value='13'>iPhone 13</option>
+    <option value='12'>iPhone 12</option>
+    <option value='X'>iPhone X & XR</option>
+    <option value='8'>iPhone 8</option>
+    <option value='7'>iPhone 7</option>
+    <option value='5'>iPhone 5</option>
+  `
 
-  opciones.addEventListener('change', (e) => {
-    const orden = e.target.value
-    if (orden === '') {
-      FilterPhones(iPhones)
-    } else if (orden === 'de mayor a menor') {
-      FilterPhones(
-        iPhones
-          .slice()
-          .sort(
-            (a, b) =>
-              b.price -
-              (b.price * b.percentage) / 100 -
-              a.price +
-              (a.price * a.percentage) / 100
-          )
-      )
-    } else if (orden === 'de menor a mayor') {
-      FilterPhones(
-        iPhones
-          .slice()
-          .sort(
-            (a, b) =>
-              a.price -
-              (a.price * a.percentage) / 100 -
-              b.price +
-              (b.price * b.percentage) / 100
-          )
-      )
-    } else if (orden === 'de mayor a menor espacio') {
-      FilterPhones(
-        iPhones.sort((a, b) => {
-          if (a.storage === 1) {
-            return -1
-          } else if (b.storage === 1) {
-            return 1
+  const buscadorunico = document.createElement('input')
+  buscadorunico.type = 'number'
+  buscadorunico.placeholder = '€ € €'
+  buscadorunico.classList.add('seleccionmodel')
+  const aceptar = document.createElement('button')
+  aceptar.classList.add('aceptar')
+  aceptar.textContent = 'Buscar'
+  const limpiar = document.createElement('button')
+  limpiar.classList.add('limpiar')
+  limpiar.textContent = 'Limpiar'
+
+  function verificarCampos() {
+    if (opciones.value !== '' && buscadorunico.value !== '') {
+      aceptar.disabled = false
+    } else {
+      aceptar.disabled = true
+    }
+  }
+
+  opciones.addEventListener('change', verificarCampos)
+  buscadorunico.addEventListener('input', verificarCampos)
+
+  function buscarporprecio() {
+    if (!aceptar.disabled) {
+      const modeloSeleccionado = opciones.value
+      const precioBuscado = parseFloat(buscadorunico.value)
+
+      const resultados = iPhones.filter((phone) => {
+        if (phone.model.includes(modeloSeleccionado)) {
+          if (phone.percentage > 0) {
+            return (
+              parseFloat(
+                phone.price - (phone.price * phone.percentage) / 100
+              ) === precioBuscado
+            )
           } else {
-            return b.storage - a.storage
+            return parseFloat(phone.price) === precioBuscado
           }
-        })
-      )
-    } else if (orden === 'de menor a mayor espacio') {
-      FilterPhones(
-        iPhones.sort((a, b) => {
-          if (a.storage === 1) {
-            return 1
-          } else if (b.storage === 1) {
-            return -1
-          } else {
-            return a.storage - b.storage
-          }
-        })
-      )
-    } else if (orden === 'de mayor valoracion a menor valoracion') {
-      FilterPhones(iPhones.sort((a, b) => b.stars - a.stars))
-    } else if (orden === 'de menor valoracion a mayor valoracion') {
-      FilterPhones(iPhones.sort((a, b) => a.stars - b.stars))
+        } else {
+          return false
+        }
+      })
+
+      lista.innerHTML = ''
+      if (resultados.length === 0) {
+        const error = document.querySelector('.error')
+        if (!error) {
+          const errorDos = document.createElement('p')
+          errorDos.classList.add('error')
+          errorDos.textContent =
+            'No se ha encontrado ningún teléfono con este precio'
+          principal.appendChild(errorDos)
+        }
+        return
+      } else {
+        const error = document.querySelector('.error')
+        if (error) {
+          principal.removeChild(error)
+        }
+      }
+
+      FilterPhones(resultados)
+    }
+  }
+
+  aceptar.addEventListener('click', buscarporprecio)
+
+  function limpiarbuscador() {
+    buscadorunico.value = ''
+    opciones.value = ''
+    FilterPhones(iPhones)
+  }
+
+  limpiar.addEventListener('click', () => {
+    buscadorunico.value = ''
+    opciones.value = ''
+    const error = document.querySelector('.error')
+    if (error) {
+      principal.removeChild(error)
+    }
+    FilterPhones(iPhones)
+  })
+
+  buscadorunico.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      buscarporprecio()
     }
   })
+
+  Divsubmenu.appendChild(buscadorunico)
+  Divsubmenu.appendChild(aceptar)
+  Divsubmenu.appendChild(limpiar)
 
   Divsubmenu.appendChild(ordenar)
   ordenar.appendChild(opciones)
@@ -489,63 +526,6 @@ function FilterPromocion(promos) {
   })
 
   principal.appendChild(promo)
-}
-
-function buscadoriphones(bucador) {
-  const buscadorunico = document.createElement('input')
-  const aceptar = document.createElement('button')
-  aceptar.classList.add('aceptar')
-  aceptar.textContent = 'Buscar'
-  buscadorunico.classList.add('buscadormovil')
-  buscadorunico.placeholder = 'Buscar modelos..'
-  const limpiar = document.createElement('button')
-  limpiar.classList.add('limpiar')
-  limpiar.textContent = 'Limpiar'
-
-  function buscarTelefonos() {
-    const localizador = buscadorunico.value.toLowerCase()
-    const phonesfiltrados = iPhones.filter((phone) =>
-      (phone.name + ' ' + phone.model).toLowerCase().includes(localizador)
-    )
-    FilterPhones(phonesfiltrados)
-
-    const error = document.querySelector('.error')
-    if (phonesfiltrados.length === 0) {
-      if (!error) {
-        const error = document.createElement('p')
-        error.classList.add('error')
-        error.textContent =
-          'No se ha encontrado ningún teléfono con estas características'
-        principal.appendChild(error)
-      }
-    } else {
-      if (error) {
-        principal.removeChild(error)
-      }
-    }
-  }
-  function limpiarbuscador() {
-    buscadorunico.value = ''
-    const error = document.querySelector('.error')
-    if (error) {
-      principal.removeChild(error)
-    }
-    FilterPhones(iPhones)
-  }
-
-  limpiar.addEventListener('click', limpiarbuscador)
-  buscadorunico.addEventListener('search', buscarTelefonos)
-  aceptar.addEventListener('click', buscarTelefonos)
-
-  buscadorunico.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      buscarTelefonos()
-    }
-  })
-
-  Divsubmenu.appendChild(buscadorunico)
-  Divsubmenu.appendChild(aceptar)
-  Divsubmenu.appendChild(limpiar)
 }
 
 function compracesta() {
@@ -805,8 +785,7 @@ Espacio()
 FilterColor()
 Estrellas()
 FilterPromocion()
-buscadoriphones()
-FilterOrdenar()
+SubMenu()
 compracesta()
 FilterPhones(iPhones)
 
