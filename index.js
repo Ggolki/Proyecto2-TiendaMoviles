@@ -79,8 +79,8 @@ const iPhones = [
     stars: 4,
     reviews: 23,
     storage: 256,
-    price: 1000,
-    percentage: 0,
+    price: 1050,
+    percentage: 3,
     image: './Assets/Imagenes/300822_0_vy3iid.png'
   },
   {
