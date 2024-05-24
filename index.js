@@ -450,25 +450,50 @@ function SubMenu(variedad) {
       ) {
         if (!isNaN(precioBuscado)) {
           if (phone.percentage > 0) {
+            const precioBase = Math.floor(precioBuscado / 100) * 100
             return (
               parseFloat(
                 phone.price - (phone.price * phone.percentage) / 100
-              ) === precioBuscado
+              ) >= precioBase &&
+              parseFloat(
+                phone.price - (phone.price * phone.percentage) / 100
+              ) <=
+                precioBase + 100
             )
           } else {
-            return parseFloat(phone.price) === precioBuscado
+            // return parseFloat(phone.price) === precioBuscado
+            const precioBase = Math.floor(precioBuscado / 100) * 100
+            if (
+              parseFloat(phone.price) >= precioBase &&
+              parseFloat(phone.price) <= precioBase + 100
+            ) {
+              return true
+            } else {
+              return false
+            }
           }
         } else {
           return true
         }
       } else if (modeloSeleccionado === '' && !isNaN(precioBuscado)) {
         if (phone.percentage > 0) {
+          const precioBase = Math.floor(precioBuscado / 100) * 100
           return (
-            parseFloat(phone.price - (phone.price * phone.percentage) / 100) ===
-            precioBuscado
+            parseFloat(phone.price - (phone.price * phone.percentage) / 100) >=
+              precioBase &&
+            parseFloat(phone.price - (phone.price * phone.percentage) / 100) <=
+              precioBase + 100
           )
         } else {
-          return parseFloat(phone.price) === precioBuscado
+          const precioBase = Math.floor(precioBuscado / 100) * 100
+          if (
+            parseFloat(phone.price) >= precioBase &&
+            parseFloat(phone.price) <= precioBase + 100
+          ) {
+            return true
+          } else {
+            return false
+          }
         }
       } else {
         return false
